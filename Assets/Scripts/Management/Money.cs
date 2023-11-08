@@ -10,7 +10,7 @@ public class Money
         "", "k", "m", "M", "b", "B", "t", "T", "q", "Q", "p", "P", "s", "S",
         "h", "H", "o", "O", "n", "N", "d", "D", "ud", "uD", "dd", "dD", "td",
         "tD", "qd", "qD", "pd", "pD", "sd", "sD", "hd", "hD", "od", "oD", "nd",
-        "nD", // "S", "h", "H", "o", "O", "n", "N", "d", "D", "ud", "uD", "dd"
+        "nD"
     };
     private static string[] _words = new string[]
     {
@@ -23,8 +23,7 @@ public class Money
         "Quattuordecillion", "Quattuordecilliard", "Pendecillion",
         "Pendecilliard", "Sedecillion", "Sedecilliard", "Heptdecillion",
         "Heptdecilliard", "Octodecillion", "Octodecilliard", "Novendecillion",
-        "Nondecilliard",
-        // "S", "h", "H", "o", "O", "n", "N", "d", "D", "ud", "uD", "dd"
+        "Nondecilliard"
     };
 
     public Money(float m, int e)
@@ -33,6 +32,23 @@ public class Money
         _exponent = e;
     }
 
+    public float Mantissa()
+    {
+        return _mantissa;
+    }
+
+    public int Exponent()
+    {
+        return _exponent;
+    }
+    
+    // negation
+    public static Money operator -(Money m)
+    {
+        return new Money(-m._mantissa, m._exponent);
+    }
+
+    // addition
     public static Money operator +(Money m1, Money m2)
     {
         var ediff = m1._exponent - m2._exponent;
@@ -48,11 +64,16 @@ public class Money
 
         // move to next unit if necessary
         var e = ediff > 0 ? m1._exponent : m2._exponent;
-        if (m >= 1000f) { m /= 1000f; e += 3; }
+        if (m >= 1000f)
+        {
+            m /= 1000f;
+            e += 3;
+        }
 
         return new Money(m, e);
     }
 
+    // subtraction
     public static Money operator -(Money m1, Money m2)
     {
         var ediff = m1._exponent - m2._exponent;
@@ -73,6 +94,27 @@ public class Money
         return new Money(m, e);
     }
 
+    // scaling
+    public static Money operator *(Money m, float f)
+    {
+        var mf = m._mantissa * f;
+        var e = m._exponent;
+
+        if (mf >= 1000f)
+        {
+            mf /= 1000f;
+            e += 3;
+        }
+        else if (mf < 1f)
+        {
+            mf *= 1000f;
+            e -= 3;
+        }
+
+        return new Money(mf, e);
+    }
+
+    // less
     public static bool operator <(Money m1, Money m2)
     {
         if (m1._exponent < m2._exponent) return true;
@@ -80,11 +122,13 @@ public class Money
         else return m1._mantissa < m2._mantissa;
     }
 
+    // greater
     public static bool operator >(Money m1, Money m2)
     {
         return m2 < m1;
     }
 
+    // display
     public override string ToString()
     {
         return _mantissa.ToString("0.00") + _letters[_exponent / 3];

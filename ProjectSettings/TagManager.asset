@@ -8,6 +8,7 @@ TagManager:
   - Planet
   - Buildings
   - Mockup
+  - Asteroid
   layers:
   - Default
   - TransparentFX

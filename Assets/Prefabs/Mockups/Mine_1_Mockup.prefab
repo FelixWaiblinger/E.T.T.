@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Materials:
-  - {fileID: 2100000, guid: ce59e8771fb1b864aa80c4f575896fcd, type: 2}
+  - {fileID: 2100000, guid: d6c3c1a58047d8b4f9a7d2b20dc35fc3, type: 2}
 --- !u!1001 &1167872581057167421
 PrefabInstance:
   m_ObjectHideFlags: 0

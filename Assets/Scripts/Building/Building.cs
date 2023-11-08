@@ -3,10 +3,18 @@ using UnityEngine;
 
 public abstract class Building : MonoBehaviour, ISelectable
 {
-    [SerializeField] private VoidEventChannel _buildEvent;
     [SerializeField] private GameObject _buildEffect;
+    private Outline _outline;
+    private float _animScale = 0.02f;
+    protected int _level = 0;
 
-    private int _level = 0;
+    void Awake()
+    {
+        _outline = GetComponent<Outline>();
+
+        StartCoroutine(BuildAnimation());
+        Instantiate(_buildEffect, transform.position + transform.up, transform.rotation);
+    }
 
     IEnumerator BuildAnimation()
     {
@@ -14,19 +22,19 @@ public abstract class Building : MonoBehaviour, ISelectable
 
         var scale = transform.localScale;
 
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 50; i++)
         {
-            transform.localScale += Vector3.right * 0.01f;
-            transform.localScale -= Vector3.up * 0.01f;
-            transform.localScale += Vector3.forward * 0.01f;
+            transform.localScale += Vector3.right * _animScale;
+            transform.localScale -= Vector3.up * _animScale;
+            transform.localScale += Vector3.forward * _animScale;
             yield return null;
         }
 
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 50; i++)
         {
-            transform.localScale -= Vector3.right * 0.01f;
-            transform.localScale += Vector3.up * 0.01f;
-            transform.localScale -= Vector3.forward * 0.01f;
+            transform.localScale -= Vector3.right * _animScale;
+            transform.localScale += Vector3.up * _animScale;
+            transform.localScale -= Vector3.forward * _animScale;
             yield return null;
         }
 
@@ -36,15 +44,7 @@ public abstract class Building : MonoBehaviour, ISelectable
     public void Select()
     {
         Debug.Log("Selected");
-    }
-
-    public void Build(Transform parent)
-    {
-        transform.SetParent(parent);
-
-        StartCoroutine(BuildAnimation());
-        Instantiate(_buildEffect, transform.position, transform.rotation);
-        _buildEvent.RaiseVoidEvent();
+        _outline.enabled = true;
     }
 
     #region HELPER

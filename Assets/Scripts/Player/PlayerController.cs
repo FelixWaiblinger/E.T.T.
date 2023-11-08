@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [SerializeField] Texture2D _normalCursor;
     [SerializeField] Texture2D _buildCursor;
     [SerializeField] Texture2D _rotateCursor;
+    [SerializeField] Texture2D _removeCursor;
 
     [Header("Input")]
     [SerializeField] private float _rotateSpeed;
@@ -22,10 +23,11 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [SerializeField] private IntEventChannel _buildEvent;
     [SerializeField] private LayerMask _obstacleLayers;
     private GameObject _mockup = null;
+    private Material[] _mockupMaterials;
     private Color[] _mockupBaseColors;
     private Color _clearColor = new Color(0, 0.2f, 0, 0), _blockColor = new Color(0.2f, 0, 0, 0);
     private int _mockupIndex = -1;
-    private bool _isClear = false;
+    private bool _isClear = false, _remove = false;
 
     #region SETUP
 
@@ -82,9 +84,20 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
             }
 
             // slightly tint the mockup red or green
-            var materials = _mockup.GetComponent<Mockup>().Materials;
-            for (int i = 0; i < _mockupBaseColors.Length; i++)
-                materials[i].color = _mockupBaseColors[i] + (_isClear ? _clearColor : _blockColor);
+            if (_mockupMaterials == null) _mockupMaterials = _mockup.GetComponent<Mockup>().Materials;
+            for (int i = 0; i < _mockupMaterials.Length; i++)
+            {
+                var c = _mockupBaseColors[i] + (_isClear ? _clearColor : _blockColor);
+                c.a = 0.5f;
+                _mockupMaterials[i].color = c;
+            }
+        }
+        else if (_mockupMaterials != null)
+        {
+            for (int i = 0; i < _mockupMaterials.Length; i++)
+                _mockupMaterials[i].color = _mockupBaseColors[i];
+            _mockupMaterials = null;
+            _mockupBaseColors = null;
         }
     }
 
@@ -93,6 +106,8 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     // select an object
 	public void OnSelect(InputAction.CallbackContext context)
 	{
+        if (context.phase != InputActionPhase.Started) return;
+
         // in build mode
         if (_mockup != null)
         {
@@ -108,7 +123,10 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
             if (!Physics.Raycast(ray, out var hit)) return;
 
             if (!hit.collider.TryGetComponent<ISelectable>(out var obj))
-                obj.Select();
+            {
+                if (_remove) Destroy(hit.collider.gameObject);
+                else obj.Select();
+            }
         }
 	}
 
@@ -145,10 +163,10 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     #endregion
 
-    // TODO
     public void Remove()
     {
-        // destroy buildings
+        _remove = !_remove;
+        SetCursor(_remove ? _removeCursor : _normalCursor);
     }
 
     // TODO

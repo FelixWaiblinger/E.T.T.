@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Mine : Building
+public class Factory : Building, IBoostable
 {
     [SerializeField] private MoneyEventChannel _moneyEvent;
     [SerializeField] private FloatEventChannel _approvalEvent;
@@ -16,11 +17,17 @@ public class Mine : Building
 
     void Update()
     {
+
         if (_timer < _incomeTimer) _timer += Time.deltaTime;
         else
         {
-            _moneyEvent.RaiseMoneyEvent(_income);
+            _moneyEvent.RaiseMoneyEvent(_income * Mathf.Pow(2f, _level));
             _timer = 0;
         }
+    }
+
+    public void Boost(float factor)
+    {
+        _income = _income * factor;
     }
 }
