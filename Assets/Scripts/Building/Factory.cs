@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Factory : Building, IBoostable
@@ -24,6 +23,13 @@ public class Factory : Building, IBoostable
             _moneyEvent.RaiseMoneyEvent(_income * Mathf.Pow(2f, _level));
             _timer = 0;
         }
+    }
+
+    public override void Upgrade()
+    {
+        base.Upgrade();
+
+        _income = _income * 2f;
     }
 
     public void Boost(float factor)

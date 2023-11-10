@@ -1,12 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class Building : MonoBehaviour, ISelectable
+public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 {
+    [SerializeField] private Transform _upgradeVisuals;
+    [SerializeField] private Canvas _infoCanvas;
+    [SerializeField] private VoidEventChannel _toggleInfoEvent;
     [SerializeField] private GameObject _buildEffect;
+    [SerializeField] private GameObject _upgradeEffect;
     private Outline _outline;
     private float _animScale = 0.02f;
     protected int _level = 0;
+
+    #region SETUP
 
     void Awake()
     {
@@ -16,10 +22,30 @@ public abstract class Building : MonoBehaviour, ISelectable
         Instantiate(_buildEffect, transform.position + transform.up, transform.rotation);
     }
 
+    void OnEnable()
+    {
+        _toggleInfoEvent.VoidEventRaised += ToggleInfo;
+    }
+
+    void OnDisable()
+    {
+        _toggleInfoEvent.VoidEventRaised -= ToggleInfo;
+    }
+
+    void OnMouseEnter()
+    {
+        _outline.enabled = true;
+    }
+
+    void OnMouseExit()
+    {
+        _outline.enabled = false;
+    }
+
+    #endregion
+
     IEnumerator BuildAnimation()
     {
-        SetOpaqueness(1);
-
         var scale = transform.localScale;
 
         for (int i = 0; i < 50; i++)
@@ -44,19 +70,19 @@ public abstract class Building : MonoBehaviour, ISelectable
     public void Select()
     {
         Debug.Log("Selected");
-        _outline.enabled = true;
     }
 
-    #region HELPER
-
-    void SetOpaqueness(float value)
+    public virtual void Upgrade()
     {
-        for (int i = 0; i < transform.childCount; i++)
-            transform.GetChild(i)
-                     .GetComponent<MeshRenderer>()
-                     .material
-                     .color += new Color(0, 0, 0, value);
+        if (_level == 10) return;
+
+        _level++;
+        _upgradeVisuals.GetChild(_level - 1).gameObject.SetActive(true);
+        Instantiate(_upgradeEffect, transform.position + transform.up, transform.rotation);
     }
 
-    #endregion
+    void ToggleInfo()
+    {
+        _infoCanvas.enabled = !_infoCanvas.enabled;
+    }
 }

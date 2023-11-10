@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d60e472daa61c844b29106c06447b62, type: 3}
   m_Name: Timewinder
   m_EditorClassIdentifier: 
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 58077e7d7c1f69e448677d19dddcbc9c, type: 3}
   Name: Timewinder
   Cost:
     _mantissa: -7.942
-    _exponent: 21
+    _exponent: 24
   Prefab: {fileID: 0}
