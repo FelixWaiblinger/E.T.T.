@@ -4,9 +4,9 @@ using TMPro;
 
 public class Shop : MonoBehaviour
 {
+    [SerializeField] private IntEventChannel _shopSelectEvent;
     [SerializeField] private Button[] _shopOptions;
     [SerializeField] private BuildingSO[] _buildingOptions;
-    [SerializeField] private IntEventChannel _shopSelectEvent;
 
     private void Awake()
     {

@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 {
     [SerializeField] private Transform _upgradeVisuals;
-    [SerializeField] private Canvas _infoCanvas;
     [SerializeField] private VoidEventChannel _toggleInfoEvent;
+    [SerializeField] private GameObject _infoCanvas;
+    [SerializeField] private TMP_Text _stats;
     [SerializeField] private GameObject _buildEffect;
     [SerializeField] private GameObject _upgradeEffect;
     private Outline _outline;
@@ -78,11 +80,12 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
         _level++;
         _upgradeVisuals.GetChild(_level - 1).gameObject.SetActive(true);
+        _stats.text = this.name + "\nLvl. " + (_level + 1).ToString();
         Instantiate(_upgradeEffect, transform.position + transform.up, transform.rotation);
     }
 
     void ToggleInfo()
     {
-        _infoCanvas.enabled = !_infoCanvas.enabled;
+        _infoCanvas.SetActive(!_infoCanvas.activeSelf);
     }
 }

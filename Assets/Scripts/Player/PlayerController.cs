@@ -1,10 +1,16 @@
-using System.Linq;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 {
+    [Header("Events")]
+    [SerializeField] private IntEventChannel _shopSelectEvent;
+    [SerializeField] private IntEventChannel _buildEvent;
+    [SerializeField] private VoidEventChannel _toggleInfoEvent;
+    [SerializeField] private VoidEventChannel _departEvent;
+
     [Header("Cursor")]
     [SerializeField] Texture2D _normalCursor;
     [SerializeField] Texture2D _buildCursor;
@@ -17,15 +23,18 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     private GameInput gameInput;
     private Camera _camera;
 
-    [Header("Build")]
+    [Header("Building")]
     [SerializeField] private GameObject _denyEffect;
-    [SerializeField] private Mockup[] _buildingMockups;
-    [SerializeField] private IntEventChannel _shopSelectEvent;
-    [SerializeField] private IntEventChannel _buildEvent;
     [SerializeField] private LayerMask _obstacleLayers;
+    [SerializeField] private Mockup[] _buildingMockups;
     private Mockup _mockup = null;
     private int _mockupIndex = -1;
     private bool _isPlanet = false, _remove = false;
+
+    [Header("Departure")]
+    [SerializeField] private Image _departBar;
+    private float _departTimer = 0;
+    private bool _depart = false;
 
     #region SETUP
 
@@ -51,6 +60,11 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
         _shopSelectEvent.IntEventRaised -= CreateMockup;
     }
 
+    void OnDestroy()
+    {
+        gameInput.Controls.RemoveCallbacks(this);
+    }
+
     IEnumerator Introduction()
     {
         var camera = transform.GetChild(0);
@@ -69,21 +83,9 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     void Update()
     {
-        if (_mockup != null)
-        {
-            // move the mockup along with the mouse
-            var mouse = Mouse.current.position.ReadValue();
-            _isPlanet = MouseToWorld(mouse, out var worldPosition);
+        UpdateMockup();
 
-            if (worldPosition != _mockup.transform.position)
-            {
-                _mockup.transform.position = worldPosition;
-                _mockup.transform.up = worldPosition;
-            }
-
-            // slightly tint the mockup red or green
-            _mockup.SetClear(_isPlanet);
-        }
+        UpdateDepart();
     }
 
     #region INPUT
@@ -111,7 +113,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
             if (!Physics.Raycast(ray, out var hit)) return;
 
-            if (!hit.collider.TryGetComponent<ISelectable>(out var obj))
+            if (hit.collider.TryGetComponent<ISelectable>(out var obj))
             {
                 if (_remove) Destroy(hit.collider.gameObject);
                 else obj.Select();
@@ -166,18 +168,43 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     #endregion
 
+    #region BUTTON
+
     public void Remove()
     {
         _remove = !_remove;
         SetCursor(_remove ? _removeCursor : _normalCursor);
     }
 
+    public void ToggleInfo()
+    {
+        _toggleInfoEvent.RaiseVoidEvent();
+    }
+
     // TODO
     public void Pause()
     {
-        CreateMockup(_mockupIndex); // cancel current build mode
+        // cancel current build mode
+        if (_mockup != null) CreateMockup(_mockupIndex);
+
         // open pause menu
     }
+
+    public void StartDepart()
+    {
+        _depart = true;
+    }
+
+    public void StopDepart()
+    {
+        _depart = false;
+        _departTimer = 0;
+        _departBar.fillAmount = 0;
+    }
+
+    #endregion
+
+    #region EVENT
 
     void CreateMockup(int option)
     {
@@ -185,7 +212,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
         if (_mockupIndex == option)
         {
             SetCursor(_normalCursor);
-            Destroy(_mockup);
+            Destroy(_mockup.gameObject);
             _mockupIndex = -1;
             return;
         }
@@ -195,7 +222,42 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
         _mockupIndex = option;
     }
 
+    #endregion
+
     #region HELPER
+
+    void UpdateMockup()
+    {
+        if (_mockup == null) return;
+
+        // move the mockup along with the mouse
+        var mouse = Mouse.current.position.ReadValue();
+        _isPlanet = MouseToWorld(mouse, out var worldPosition);
+
+        if (worldPosition != _mockup.transform.position)
+        {
+            _mockup.transform.position = worldPosition;
+            _mockup.transform.up = worldPosition;
+        }
+
+        // slightly tint the mockup red or green
+        _mockup.SetClear(_isPlanet);
+    }
+
+    void UpdateDepart()
+    {
+        if (!_depart) return;
+
+        if (_departTimer < 3f)
+        {
+            _departTimer += Time.deltaTime;
+            _departBar.fillAmount = _departTimer / 3f;
+            return;
+        }
+
+        _departEvent.RaiseVoidEvent();
+        _depart = false;
+    }
 
     void SetCursor(Texture2D cursor)
     {

@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class Asteroid : MonoBehaviour
+public class Asteroid : MonoBehaviour, ISelectable
 {
     public Money Value { get; private set; }
+    [SerializeField] private MoneyEventChannel _moneyEvent;
+    [SerializeField] private GameObject _explodeEffect;
     private float _speed;
     private Vector3 _direction;
     private Vector3 _rotation;
@@ -15,7 +17,7 @@ public class Asteroid : MonoBehaviour
 
     void OnMouseExit()
     {
-        _outline.enabled = false;    
+        _outline.enabled = false;
     }
     
     void Update()
@@ -33,5 +35,12 @@ public class Asteroid : MonoBehaviour
         _speed = speed;
         _rotation = Random.onUnitSphere;
         _outline = GetComponent<Outline>();
+    }
+
+    public void Select()
+    {
+        _moneyEvent.RaiseMoneyEvent(Value);
+        Instantiate(_explodeEffect, transform.position, transform.rotation);
+        Destroy(gameObject);
     }
 }

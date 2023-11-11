@@ -26,22 +26,22 @@ public class Money
         "Nondecilliard"
     };
 
+    #region SETUP
+
     public Money(float m, int e)
     {
         _mantissa = m;
         _exponent = e;
     }
 
-    public float Mantissa()
-    {
-        return _mantissa;
-    }
+    public float Mantissa() { return _mantissa; }
 
-    public int Exponent()
-    {
-        return _exponent;
-    }
+    public int Exponent() { return _exponent; }
+
+    #endregion
     
+    #region OPERATOR
+
     // negation
     public static Money operator -(Money m)
     {
@@ -128,7 +128,8 @@ public class Money
         return m2 < m1;
     }
 
-    // display
+    #endregion
+
     public override string ToString()
     {
         return _mantissa.ToString("0.00") + _letters[_exponent / 3];

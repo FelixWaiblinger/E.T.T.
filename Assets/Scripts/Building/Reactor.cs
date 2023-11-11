@@ -1,11 +1,13 @@
 using UnityEngine;
 
-public class Reactor : MonoBehaviour
+public class Reactor : Building
 {
     [SerializeField] private FloatEventChannel _approvalEvent;
     [SerializeField] private float _approval;
     [SerializeField] private float _boost;
     [SerializeField] private LayerMask _boostableLayer;
+
+    #region SETUP
 
     void Start()
     {
@@ -35,4 +37,6 @@ public class Reactor : MonoBehaviour
             if (obj.TryGetComponent<IBoostable>(out var b))
                 b.Boost(1 / _boost);
     }
+    
+    #endregion
 }

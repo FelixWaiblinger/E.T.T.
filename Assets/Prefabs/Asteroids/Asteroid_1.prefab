@@ -68,6 +68,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fbf026b8212df543aa1d428cfc0977e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _moneyEvent: {fileID: 11400000, guid: d81874fd4db1a7f4c9c6c35c0ac62e62, type: 2}
+  _explodeEffect: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312,
+    type: 3}
 --- !u!114 &3845831237297150858
 MonoBehaviour:
   m_ObjectHideFlags: 0
