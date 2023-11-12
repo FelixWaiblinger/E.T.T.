@@ -16,7 +16,6 @@ public class Factory : Building, IBoostable
 
     void Update()
     {
-
         if (_timer < _incomeTimer) _timer += Time.deltaTime;
         else
         {
@@ -35,5 +34,15 @@ public class Factory : Building, IBoostable
     public void Boost(float factor)
     {
         _income = _income * factor;
+    }
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo(
+            this.name,
+            _level.ToString(),
+            _income.ToString(),
+            _upgradeCost.ToString()
+        );
     }
 }

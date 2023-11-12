@@ -9,6 +9,7 @@ TagManager:
   - Buildings
   - Mockup
   - Asteroid
+  - Info
   layers:
   - Default
   - TransparentFX

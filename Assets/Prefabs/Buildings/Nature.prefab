@@ -110,8 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73d1303d4916c0c46b904d70ff49e6f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _infoEvent: {fileID: 11400000, guid: 43158232031afec4ebda44be03e0a686, type: 2}
   _upgradeVisuals: {fileID: 919222504704590604}
-  _toggleInfoEvent: {fileID: 11400000, guid: f2fe8e2bea96b3d47a078d497d7be071, type: 2}
   _infoCanvas: {fileID: 4172854379849183430}
   _stats: {fileID: 5367142382447252856}
   _buildEffect: {fileID: 2883797502249945402, guid: 1e54877675f6e4a46ad7ca7c4d7a5bf6,
@@ -120,7 +120,6 @@ MonoBehaviour:
     type: 3}
   _approvalEvent: {fileID: 11400000, guid: 7a13f8e8241df2b4d99e9f53b4f5a9ed, type: 2}
   _approval: 0.05
-  _decayTimer: 0
 --- !u!114 &5433741420228513711
 MonoBehaviour:
   m_ObjectHideFlags: 0

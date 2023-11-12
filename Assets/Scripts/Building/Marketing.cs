@@ -15,4 +15,9 @@ public class Marketing : Building
     {
         
     }
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo();
+    }
 }

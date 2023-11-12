@@ -3,8 +3,10 @@ using UnityEngine;
 public class Asteroid : MonoBehaviour, ISelectable
 {
     public Money Value { get; private set; }
+    [SerializeField] private GameData _gameData;
     [SerializeField] private MoneyEventChannel _moneyEvent;
     [SerializeField] private GameObject _explodeEffect;
+    [SerializeField] private AudioClip _explodeSound;
     private float _speed;
     private Vector3 _direction;
     private Vector3 _rotation;
@@ -41,6 +43,9 @@ public class Asteroid : MonoBehaviour, ISelectable
     {
         _moneyEvent.RaiseMoneyEvent(Value);
         Instantiate(_explodeEffect, transform.position, transform.rotation);
+        AudioSource.PlayClipAtPoint(_explodeSound, transform.position, _gameData.Volume);
         Destroy(gameObject);
     }
+
+    public void Deselect() {}
 }

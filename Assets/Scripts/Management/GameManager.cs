@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text _moneyText;
     [SerializeField] private TMP_Text _approvalText;
     [SerializeField] private Image _approvalBar;
-    private Money _money = new Money(10, 3); // 10k start money
+    [SerializeField] private GameObject _departButton;
+    private Money _money, _targetMoney;
     private float _approval = 0.5f;
 
     [Header("Planet")]
@@ -51,12 +52,14 @@ public class GameManager : MonoBehaviour
         {
             var idx = Random.Range(0, _planetTypes.Length);
             var moon = Instantiate(_planetTypes[idx], _planet);
+            moon.AddComponent(typeof(Moon));
             moon.transform.position = Random.onUnitSphere * 15f;
             moon.transform.localScale = new(2, 2, 2);
             _moons.Add(moon);
         }
 
         _money = _gameData.Money;
+        _targetMoney = new Money(1f, _money.Exponent() + 6);
         _approval = _gameData.Approval;
     }
 
@@ -102,6 +105,8 @@ public class GameManager : MonoBehaviour
             _money = _money - amount;
 
         _moneyText.text = _money.ToString();
+
+        if (_money > _targetMoney) _departButton.SetActive(true);
     }
 
     void UpdateApproval(float amount)

@@ -15,6 +15,6 @@ MonoBehaviour:
   Level: 0
   Money:
     _mantissa: 10
-    _exponent: 3
+    _exponent: 6
   Approval: 0.5
   Volume: 0.5

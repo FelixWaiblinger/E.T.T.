@@ -4,8 +4,8 @@ using TMPro;
 
 public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 {
+    [SerializeField] private BoolEventChannel _infoEvent;
     [SerializeField] private Transform _upgradeVisuals;
-    [SerializeField] private VoidEventChannel _toggleInfoEvent;
     [SerializeField] private GameObject _infoCanvas;
     [SerializeField] private TMP_Text _stats;
     [SerializeField] private GameObject _buildEffect;
@@ -13,6 +13,8 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
     private Outline _outline;
     private float _animScale = 0.02f;
     protected int _level = 0;
+    protected Money _upgradeCost = new Money(0, 0);
+    private bool _selected = false;
 
     #region SETUP
 
@@ -26,22 +28,22 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
     void OnEnable()
     {
-        _toggleInfoEvent.VoidEventRaised += ToggleInfo;
+        _infoEvent.BoolEventRaised += ToggleInfo;
     }
 
     void OnDisable()
     {
-        _toggleInfoEvent.VoidEventRaised -= ToggleInfo;
+        _infoEvent.BoolEventRaised -= ToggleInfo;
     }
 
     void OnMouseEnter()
     {
-        _outline.enabled = true;
+        _outline.enabled = _selected || true;
     }
 
     void OnMouseExit()
     {
-        _outline.enabled = false;
+        _outline.enabled = _selected || false;
     }
 
     #endregion
@@ -71,7 +73,20 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
     public void Select()
     {
-        Debug.Log("Selected");
+        _selected = true;
+        _outline.enabled = true;
+        GameObject.FindGameObjectWithTag("Info")
+                  .GetComponent<RMenu>()
+                  .Show(Information());
+    }
+
+    public void Deselect()
+    {
+        _selected = false;
+        _outline.enabled = false;
+        GameObject.FindGameObjectWithTag("Info")
+                  .GetComponent<RMenu>()
+                  .Hide();
     }
 
     public virtual void Upgrade()
@@ -84,8 +99,10 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         Instantiate(_upgradeEffect, transform.position + transform.up, transform.rotation);
     }
 
-    void ToggleInfo()
+    void ToggleInfo(bool active)
     {
-        _infoCanvas.SetActive(!_infoCanvas.activeSelf);
+        _infoCanvas.SetActive(active);
     }
+
+    protected abstract BuildingInfo Information();
 }

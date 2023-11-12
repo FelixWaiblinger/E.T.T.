@@ -2,8 +2,11 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    [SerializeField] private GameData _gameData;
     [SerializeField] private MoneyEventChannel _moneyEvent;
     [SerializeField] private GameObject _explosionEffect;
+    [SerializeField] private AudioClip _explodeSound;
+    [SerializeField] private AudioClip _startSound;
     [SerializeField] private float _speed;
     private Transform _target;
     private int _level;
@@ -16,6 +19,7 @@ public class Projectile : MonoBehaviour
         _moneyEvent.RaiseMoneyEvent(income);
 
         Instantiate(_explosionEffect, transform.position, transform.rotation);
+        AudioSource.PlayClipAtPoint(_explodeSound, transform.position, _gameData.Volume);
         Destroy(other.gameObject);
         Destroy(gameObject);
     }
@@ -36,5 +40,6 @@ public class Projectile : MonoBehaviour
     {
         _target = target;
         _level = level;
+        AudioSource.PlayClipAtPoint(_startSound, transform.position, _gameData.Volume);
     }
 }

@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [Header("Events")]
     [SerializeField] private IntEventChannel _shopSelectEvent;
     [SerializeField] private IntEventChannel _buildEvent;
-    [SerializeField] private VoidEventChannel _toggleInfoEvent;
+    [SerializeField] private BoolEventChannel _infoEvent;
     [SerializeField] private VoidEventChannel _departEvent;
 
     [Header("Cursor")]
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     private bool _rotate = false;
     private GameInput gameInput;
     private Camera _camera;
+    private ISelectable _selectedObject;
 
     [Header("Building")]
     [SerializeField] private GameObject _denyEffect;
@@ -29,7 +30,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [SerializeField] private Mockup[] _buildingMockups;
     private Mockup _mockup = null;
     private int _mockupIndex = -1;
-    private bool _isPlanet = false, _remove = false;
+    private bool _isPlanet = false, _remove = false, _info = false;
 
     [Header("Departure")]
     [SerializeField] private Image _departBar;
@@ -116,7 +117,12 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
             if (hit.collider.TryGetComponent<ISelectable>(out var obj))
             {
                 if (_remove) Destroy(hit.collider.gameObject);
-                else obj.Select();
+                else
+                {
+                    if (_selectedObject != null) _selectedObject.Deselect();
+                    _selectedObject = obj;
+                    obj.Select();
+                }
             }
         }
 	}
@@ -178,7 +184,8 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     public void ToggleInfo()
     {
-        _toggleInfoEvent.RaiseVoidEvent();
+        _info = !_info;
+        _infoEvent.RaiseBoolEvent(_info);
     }
 
     // TODO
@@ -202,17 +209,29 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
         _departBar.fillAmount = 0;
     }
 
+    public void Deselect()
+    {
+        if (_selectedObject != null) _selectedObject.Deselect();
+        _selectedObject = null;
+    }
+
+    public void DestroyOldMockup()
+    {
+        if (_mockup != null) Destroy(_mockup.gameObject);
+    }
+
     #endregion
 
     #region EVENT
 
     void CreateMockup(int option)
     {
+        DestroyOldMockup();
+        
         // cancel
         if (_mockupIndex == option)
         {
             SetCursor(_normalCursor);
-            Destroy(_mockup.gameObject);
             _mockupIndex = -1;
             return;
         }
@@ -263,7 +282,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     {
         Cursor.SetCursor(
             cursor,
-            new(cursor.width / 2, cursor.height / 2),
+            new(74, 43),
             CursorMode.Auto
         );
     }

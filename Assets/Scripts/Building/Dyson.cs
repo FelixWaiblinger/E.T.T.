@@ -15,4 +15,9 @@ public class Dyson : Building
     {
         
     }
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo();
+    }
 }

@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Moon : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private Vector3 _rotation;
+    
     void Start()
     {
-        
+        _rotation = Random.rotation.eulerAngles; 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        transform.Rotate(_rotation * Time.deltaTime, Space.Self);
     }
 }

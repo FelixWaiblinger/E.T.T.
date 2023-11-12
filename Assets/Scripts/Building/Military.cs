@@ -26,4 +26,9 @@ public class Military : Building
     {
         if (_timer > 0) _timer -= Time.deltaTime;
     }
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo();
+    }
 }

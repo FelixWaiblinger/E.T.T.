@@ -246,8 +246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b63bac8411279ea488010a0a1d306024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _infoEvent: {fileID: 11400000, guid: 43158232031afec4ebda44be03e0a686, type: 2}
   _upgradeVisuals: {fileID: 919222504704590604}
-  _toggleInfoEvent: {fileID: 11400000, guid: f2fe8e2bea96b3d47a078d497d7be071, type: 2}
   _infoCanvas: {fileID: 7010398375351822173}
   _stats: {fileID: 6399867091951025160}
   _buildEffect: {fileID: 6889676053574524597, guid: 1244a9e4f6193654989497ad418a287b,

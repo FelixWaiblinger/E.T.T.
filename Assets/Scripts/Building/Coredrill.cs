@@ -15,4 +15,9 @@ public class Coredrill : Building
     {
         
     }
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo();
+    }
 }

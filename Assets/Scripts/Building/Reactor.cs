@@ -39,4 +39,9 @@ public class Reactor : Building
     }
     
     #endregion
+
+    protected override BuildingInfo Information()
+    {
+        return new BuildingInfo();
+    }
 }
