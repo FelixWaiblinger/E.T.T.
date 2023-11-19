@@ -1,6 +1,6 @@
 using UnityEngine;
-
-public enum ShopState { Inactive, Active, Aside }
+using UnityEngine.UI;
+using TMPro;
 
 public class LMenu : MonoBehaviour
 {
@@ -9,27 +9,26 @@ public class LMenu : MonoBehaviour
     [SerializeField] private Vector3 _inactivePosition;
     [SerializeField] private RectTransform _menu;
     [SerializeField] private float _transitionSpeed;
+    [SerializeField] private Button[] _shopOptions;
+    [SerializeField] private BuildingSO[] _buildingOptions;
     private int _selectedIndex = -1;
     private bool _show = false;
-
-    #region SETUP
-
-    private void OnEnable()
-    {
-        _shopSelectEvent.IntEventRaised += SelectOption;
-    }
-
-    private void OnDisable()
-    {
-        _shopSelectEvent.IntEventRaised -= SelectOption;
-    }
     
-    void Start()
+    void Awake()
     {
         _menu.localPosition = _inactivePosition;
-    }
 
-    #endregion
+        for (int i = 0; i < _shopOptions.Length; i++)
+        {
+            var t = _shopOptions[i].transform;
+            // icon
+            t.GetChild(0).GetComponent<Image>().sprite = _buildingOptions[i].Icon;
+            // name
+            t.GetChild(1).GetComponent<TMP_Text>().text = _buildingOptions[i].Name;
+            // cost
+            t.GetChild(2).GetComponent<TMP_Text>().text = _buildingOptions[i].Cost.ToString();
+        }
+    }
 
     void Update()
     {
@@ -47,9 +46,12 @@ public class LMenu : MonoBehaviour
             );
     }
 
-    void SelectOption(int option)
+    #region BUTTON
+
+    public void SelectOption(int option)
     {
         _selectedIndex = _selectedIndex == option ? -1 : option;
+        _shopSelectEvent.RaiseIntEvent(option);
     }
 
     public void Show()
@@ -61,4 +63,6 @@ public class LMenu : MonoBehaviour
     {
         _show = false;
     }
+
+    #endregion
 }

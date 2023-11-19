@@ -11,7 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MoneyEventChannel _moneyEvent;
     [SerializeField] private FloatEventChannel _approvalEvent;
     [SerializeField] private IntEventChannel _buildEvent;
+    [SerializeField] private IntEventChannel _upgradeEvent;
     [SerializeField] private VoidEventChannel _departEvent;
+    [SerializeField] private VoidEventChannel _titleEvent;
 
     [Header("UI")]
     [SerializeField] private TMP_Text _moneyText;
@@ -19,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image _approvalBar;
     [SerializeField] private GameObject _departButton;
     private Money _money, _targetMoney;
-    private float _approval = 0.5f;
+    private float _approval;
 
     [Header("Planet")]
     [SerializeField] private Transform _planet;
@@ -60,7 +62,8 @@ public class GameManager : MonoBehaviour
 
         _money = _gameData.Money;
         _targetMoney = new Money(1f, _money.Exponent() + 6);
-        _approval = _gameData.Approval;
+        _gameData.Target = _targetMoney;
+        _approval = 0.5f + _gameData.Approval;
     }
 
     private void OnEnable()
@@ -68,7 +71,9 @@ public class GameManager : MonoBehaviour
         _moneyEvent.MoneyEventRaised += UpdateMoney;
         _approvalEvent.FloatEventRaised += UpdateApproval;
         _buildEvent.IntEventRaised += Build;
+        _upgradeEvent.IntEventRaised += Upgrade;
         _departEvent.VoidEventRaised += Depart;
+        _titleEvent.VoidEventRaised += Depart;
     }
 
     private void OnDisable()
@@ -76,7 +81,9 @@ public class GameManager : MonoBehaviour
         _moneyEvent.MoneyEventRaised -= UpdateMoney;
         _approvalEvent.FloatEventRaised -= UpdateApproval;
         _buildEvent.IntEventRaised -= Build;
+        _upgradeEvent.IntEventRaised -= Upgrade;
         _departEvent.VoidEventRaised -= Depart;
+        _titleEvent.VoidEventRaised -= Depart;
     }
     
     void Start()
@@ -99,10 +106,12 @@ public class GameManager : MonoBehaviour
 
     void UpdateMoney(Money amount)
     {
+        var factor = _approval * Mathf.Pow(2, _gameData.Level);
+
         if (amount > new Money(0, 0))
-            _money = _money + (amount * _approval);
+            _money += (amount * factor);
         else if (_money > amount)
-            _money = _money - amount;
+            _money -= amount;
 
         _moneyText.text = _money.ToString();
 
@@ -119,8 +128,9 @@ public class GameManager : MonoBehaviour
     void Build(int option)
     {
         var mockup = GameObject.FindGameObjectWithTag("Mockup").transform;
+        var cost = _buildingOptions[option].Cost;
 
-        if (_money < -_buildingOptions[option].Cost)
+        if (_money < cost)
         {
             Instantiate(
                 _denyEffect,
@@ -130,7 +140,7 @@ public class GameManager : MonoBehaviour
 
             return;
         }
-        else UpdateMoney(_buildingOptions[option].Cost);
+        else UpdateMoney(-cost);
 
 
         var building = Instantiate(
@@ -143,7 +153,19 @@ public class GameManager : MonoBehaviour
 
     void Depart()
     {
+        _gameData.Approval = _approval * 0.25f;
         ReaderWriterJSON.SaveToJSON(_gameData);
+    }
+
+    void Upgrade(int index)
+    {
+        var building = _planet.GetChild(0).GetChild(index);
+        var cost = building.GetComponent<Building>().UpgradeCost;
+        
+        if (cost > _money) return;
+
+        _money -= cost;
+        building.GetComponent<IUpgradable>().Upgrade();
     }
 
     #endregion

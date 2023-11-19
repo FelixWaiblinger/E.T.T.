@@ -15,6 +15,6 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: b52130bb79a23344aa8c335cecb91eb0, type: 3}
   Name: Military
   Cost:
-    _mantissa: -25.138
+    _mantissa: 25.138
     _exponent: 9
   Prefab: {fileID: 0}

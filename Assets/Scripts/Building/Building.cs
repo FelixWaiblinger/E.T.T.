@@ -4,6 +4,7 @@ using TMPro;
 
 public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 {
+    [SerializeField] private GameData _gameData;
     [SerializeField] private BoolEventChannel _infoEvent;
     [SerializeField] private Transform _upgradeVisuals;
     [SerializeField] private GameObject _infoCanvas;
@@ -12,8 +13,8 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
     [SerializeField] private GameObject _upgradeEffect;
     private Outline _outline;
     private float _animScale = 0.02f;
-    protected int _level = 0;
-    protected Money _upgradeCost = new Money(0, 0);
+    protected int _level = 1;
+    public Money UpgradeCost { get; protected set; }
     private bool _selected = false;
 
     #region SETUP
@@ -24,6 +25,8 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
         StartCoroutine(BuildAnimation());
         Instantiate(_buildEffect, transform.position + transform.up, transform.rotation);
+        
+        ComputeUpgradeCost();
     }
 
     void OnEnable()
@@ -46,7 +49,7 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         _outline.enabled = _selected || false;
     }
 
-    #endregion
+    protected abstract BuildingInfo Information();
 
     IEnumerator BuildAnimation()
     {
@@ -71,6 +74,8 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         transform.localScale = scale;
     }
 
+    #endregion
+
     public void Select()
     {
         _selected = true;
@@ -94,9 +99,29 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         if (_level == 10) return;
 
         _level++;
-        _upgradeVisuals.GetChild(_level - 1).gameObject.SetActive(true);
-        _stats.text = this.name + "\nLvl. " + (_level + 1).ToString();
+        _upgradeVisuals.GetChild(_level - 2).gameObject.SetActive(true);
+        ComputeUpgradeCost();
+
+        // UI
+        _stats.text = this.ToString() + "\nLvl. " + _level.ToString();
+        GameObject.FindGameObjectWithTag("Info").GetComponent<RMenu>().Show(Information());
+
+        // effects
         Instantiate(_upgradeEffect, transform.position + transform.up, transform.rotation);
+    }
+
+    public override string ToString()
+    {
+        return this.GetType().ToString();
+    }
+
+    #region HELPER
+
+    void ComputeUpgradeCost()
+    {
+        var m = 10f * Mathf.Pow(3f, (_level < 6 ? _level : _level - 5) - 1);
+        var e = (_gameData.Target.Exponent() - 6) + (_level / 5) * 3;
+        UpgradeCost = new Money(m, e);
     }
 
     void ToggleInfo(bool active)
@@ -104,5 +129,6 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         _infoCanvas.SetActive(active);
     }
 
-    protected abstract BuildingInfo Information();
+    #endregion
+
 }

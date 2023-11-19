@@ -1,8 +1,9 @@
 using UnityEngine;
 
-public class TitleManager : MonoBehaviour
+public class TMenu : MonoBehaviour
 {
     [SerializeField] private VoidEventChannel _departEvent;
+    [SerializeField] private GameObject _sMenu;
 
     public void Play()
     {
@@ -16,6 +17,6 @@ public class TitleManager : MonoBehaviour
 
     public void Settings()
     {
-        
+        _sMenu.SetActive(true);
     }
 }

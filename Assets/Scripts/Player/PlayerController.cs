@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [SerializeField] Texture2D _removeCursor;
 
     [Header("Input")]
+    [SerializeField] private GameObject _sMenu;
     [SerializeField] private float _rotateSpeed;
     private bool _rotate = false;
     private GameInput gameInput;
@@ -195,6 +196,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
         if (_mockup != null) CreateMockup(_mockupIndex);
 
         // open pause menu
+        _sMenu.SetActive(true);
     }
 
     public void StartDepart()
@@ -217,6 +219,9 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     public void DestroyOldMockup()
     {
+        SetCursor(_normalCursor);
+        _mockupIndex = -1;
+
         if (_mockup != null) Destroy(_mockup.gameObject);
     }
 
@@ -227,14 +232,6 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     void CreateMockup(int option)
     {
         DestroyOldMockup();
-        
-        // cancel
-        if (_mockupIndex == option)
-        {
-            SetCursor(_normalCursor);
-            _mockupIndex = -1;
-            return;
-        }
 
         SetCursor(_buildCursor);
         _mockup = Instantiate(_buildingMockups[option], transform);

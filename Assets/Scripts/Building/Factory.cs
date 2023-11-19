@@ -19,7 +19,7 @@ public class Factory : Building, IBoostable
         if (_timer < _incomeTimer) _timer += Time.deltaTime;
         else
         {
-            _moneyEvent.RaiseMoneyEvent(_income * Mathf.Pow(2f, _level));
+            _moneyEvent.RaiseMoneyEvent(_income);
             _timer = 0;
         }
     }
@@ -39,10 +39,11 @@ public class Factory : Building, IBoostable
     protected override BuildingInfo Information()
     {
         return new BuildingInfo(
-            this.name,
+            this.ToString(),
             _level.ToString(),
             _income.ToString(),
-            _upgradeCost.ToString()
+            UpgradeCost.ToString(),
+            transform.GetSiblingIndex()
         );
     }
 }

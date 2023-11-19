@@ -9,6 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cafaa7143d382b943a9d9b5b8676ae41, type: 3}
-  m_Name: PauseEvent
+  m_Script: {fileID: 11500000, guid: cabf617eda281ce4798661caea19b508, type: 3}
+  m_Name: UpgradeEvent
   m_EditorClassIdentifier: 

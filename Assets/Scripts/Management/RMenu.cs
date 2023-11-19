@@ -3,6 +3,7 @@ using TMPro;
 
 public class RMenu : MonoBehaviour
 {
+    [SerializeField] private IntEventChannel _upgradeEvent;
     [SerializeField] private Vector3 _activePosition;
     [SerializeField] private Vector3 _inactivePosition;
     [SerializeField] private RectTransform _menu;
@@ -11,6 +12,7 @@ public class RMenu : MonoBehaviour
     [SerializeField] private TMP_Text _gain;
     [SerializeField] private TMP_Text _cost;
     [SerializeField] private float _transitionSpeed;
+    private int _index;
     private bool _show = false;
 
     void Start()
@@ -41,10 +43,16 @@ public class RMenu : MonoBehaviour
         _level.text = "Level " + info.Level;
         _gain.text = info.Gain;
         _cost.text = info.Cost;
+        _index = info.Index;
     }
 
     public void Hide()
     {
         _show = false;
+    }
+
+    public void Upgrade()
+    {
+        _upgradeEvent.RaiseIntEvent(_index);
     }
 }

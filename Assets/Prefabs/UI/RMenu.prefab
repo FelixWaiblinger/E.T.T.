@@ -317,6 +317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b0b0f801c3f4c439a16280f7da0a98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _upgradeEvent: {fileID: 11400000, guid: 983c1adbffd686449ab715408ef4fb61, type: 2}
   _activePosition: {x: 0, y: 0, z: 0}
   _inactivePosition: {x: 700, y: 0, z: 0}
   _menu: {fileID: 195603352377583814}

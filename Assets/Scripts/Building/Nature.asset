@@ -15,6 +15,6 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: cfad8ef0b5f68ac46bd02b3156b377a4, type: 3}
   Name: Nature
   Cost:
-    _mantissa: -2.852
+    _mantissa: 2.852
     _exponent: 6
   Prefab: {fileID: 2959944599699360305, guid: a417ee27af5c7304cb9e9510610d0f46, type: 3}

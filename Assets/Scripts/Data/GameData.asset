@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Level: 0
   Money:
-    _mantissa: 10
-    _exponent: 6
-  Approval: 0.5
+    _mantissa: 100
+    _exponent: 3
+  Target:
+    _mantissa: 1
+    _exponent: 12
+  Approval: 0
   Volume: 0.5

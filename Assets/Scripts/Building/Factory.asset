@@ -15,6 +15,6 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: 2e43f0691f0d7404eae8d01381da65a0, type: 3}
   Name: Factory
   Cost:
-    _mantissa: -3.759
+    _mantissa: 3.759
     _exponent: 3
   Prefab: {fileID: 1564694307828209532, guid: acc910526f21b7448a23eb40e9ab385f, type: 3}

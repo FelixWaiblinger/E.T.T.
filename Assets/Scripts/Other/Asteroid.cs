@@ -43,7 +43,12 @@ public class Asteroid : MonoBehaviour, ISelectable
     {
         _moneyEvent.RaiseMoneyEvent(Value);
         Instantiate(_explodeEffect, transform.position, transform.rotation);
-        AudioSource.PlayClipAtPoint(_explodeSound, transform.position, _gameData.Volume);
+        AudioSource.PlayClipAtPoint(
+            _explodeSound,
+            Vector3.zero + transform.position.normalized,
+            _gameData.Volume
+        );
+        
         Destroy(gameObject);
     }
 

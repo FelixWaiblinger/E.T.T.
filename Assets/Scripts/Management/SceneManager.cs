@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class SceneHandler : MonoBehaviour
+public class SceneManager : MonoBehaviour
 {
     [SerializeField] private VoidEventChannel _departEvent;
     [SerializeField] private VoidEventChannel _titleEvent;
@@ -22,7 +21,8 @@ public class SceneHandler : MonoBehaviour
         {
             _timer -= Time.deltaTime;
 
-            if (_timer < 0) SceneManager.LoadScene(_indexToLoad);
+            if (_timer < 0)
+                UnityEngine.SceneManagement.SceneManager.LoadScene(_indexToLoad);
         }
     }
 
