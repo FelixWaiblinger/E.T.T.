@@ -9,14 +9,14 @@ public class Projectile : MonoBehaviour
     [SerializeField] private AudioClip _startSound;
     [SerializeField] private float _speed;
     private Transform _target;
-    private int _level;
+    private float _factor;
 
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Asteroid")) return;
 
         var income = other.GetComponent<Asteroid>().Value;
-        _moneyEvent.RaiseMoneyEvent(income);
+        _moneyEvent.RaiseMoneyEvent(income * _factor);
 
         Instantiate(_explosionEffect, transform.position, transform.rotation);
         AudioSource.PlayClipAtPoint(_explodeSound, transform.position, _gameData.Volume);
@@ -36,10 +36,10 @@ public class Projectile : MonoBehaviour
         transform.rotation = Quaternion.FromToRotation(transform.up, transform.position - oldPosition);
     }
 
-    public void Init(Transform target, int level)
+    public void Init(Transform target, float factor)
     {
         _target = target;
-        _level = level;
+        _factor = factor;
         AudioSource.PlayClipAtPoint(_startSound, transform.position, _gameData.Volume);
     }
 }

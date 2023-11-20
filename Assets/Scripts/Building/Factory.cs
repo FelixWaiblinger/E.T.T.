@@ -8,10 +8,12 @@ public class Factory : Building, IBoostable
     [SerializeField] private float _incomeTimer;
     [SerializeField] private float _approval;
     private float _timer = 0;
-
+    
     void Start()
     {
         _approvalEvent.RaiseFloatEvent(_approval);
+
+        CreateInfo(_income.ToString());
     }
 
     void Update()
@@ -26,24 +28,16 @@ public class Factory : Building, IBoostable
 
     public override void Upgrade()
     {
+        _income = UpgradeManager.FactoryUpgrade(_income);
+
         base.Upgrade();
 
-        _income = _income * 2f;
+        CreateInfo(_income.ToString());
+        GameObject.FindGameObjectWithTag("Info").GetComponent<RMenu>().Show(Info);
     }
 
     public void Boost(float factor)
     {
         _income = _income * factor;
-    }
-
-    protected override BuildingInfo Information()
-    {
-        return new BuildingInfo(
-            this.ToString(),
-            _level.ToString(),
-            _income.ToString(),
-            UpgradeCost.ToString(),
-            transform.GetSiblingIndex()
-        );
     }
 }

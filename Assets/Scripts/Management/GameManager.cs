@@ -153,7 +153,7 @@ public class GameManager : MonoBehaviour
 
     void Depart()
     {
-        _gameData.Approval = _approval * 0.25f;
+        _gameData.Approval = (_approval - 0.5f) * 0.5f;
         ReaderWriterJSON.SaveToJSON(_gameData);
     }
 

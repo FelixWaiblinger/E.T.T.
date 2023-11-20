@@ -10,6 +10,8 @@ public class SceneManager : MonoBehaviour
     
     void Awake()
     {
+        Application.targetFrameRate = 60;
+        
         DontDestroyOnLoad(gameObject);
         _departEvent.VoidEventRaised += () => ChangeScene(1);
         _titleEvent.VoidEventRaised += () => ChangeScene(0);

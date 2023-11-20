@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d60e472daa61c844b29106c06447b62, type: 3}
   m_Name: Nature
   m_EditorClassIdentifier: 
-  Icon: {fileID: 21300000, guid: cfad8ef0b5f68ac46bd02b3156b377a4, type: 3}
+  Icon: {fileID: 21300000, guid: cc08ccd1cf04a3d43b8d437d087cfc02, type: 3}
   Name: Nature
   Cost:
     _mantissa: 2.852

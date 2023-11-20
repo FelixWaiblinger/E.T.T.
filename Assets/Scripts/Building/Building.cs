@@ -4,17 +4,23 @@ using TMPro;
 
 public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 {
+    public BuildingInfo Info { get; protected set; }
+    public Money UpgradeCost { get; protected set; }
+
     [SerializeField] private GameData _gameData;
+    [SerializeField] private BuildingSO _buildData;
     [SerializeField] private BoolEventChannel _infoEvent;
     [SerializeField] private Transform _upgradeVisuals;
     [SerializeField] private GameObject _infoCanvas;
     [SerializeField] private TMP_Text _stats;
     [SerializeField] private GameObject _buildEffect;
     [SerializeField] private GameObject _upgradeEffect;
+    [SerializeField] private AudioClip _buildSound;
+    [SerializeField] private AudioClip _upgradeSound;
+    [SerializeField] private AudioClip _removeSound;
     private Outline _outline;
     private float _animScale = 0.02f;
     protected int _level = 1;
-    public Money UpgradeCost { get; protected set; }
     private bool _selected = false;
 
     #region SETUP
@@ -24,7 +30,18 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         _outline = GetComponent<Outline>();
 
         StartCoroutine(BuildAnimation());
-        Instantiate(_buildEffect, transform.position + transform.up, transform.rotation);
+
+        Instantiate(
+            _buildEffect,
+            transform.position + transform.up,
+            transform.rotation
+        );
+
+        AudioSource.PlayClipAtPoint(
+            _buildSound,
+            transform.position,
+            _gameData.Volume
+        );
         
         ComputeUpgradeCost();
     }
@@ -49,13 +66,20 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         _outline.enabled = _selected || false;
     }
 
-    protected abstract BuildingInfo Information();
+    void OnDestroy()
+    {
+        AudioSource.PlayClipAtPoint(
+            _removeSound,
+            transform.position,
+            _gameData.Volume
+        );
+    }
 
     IEnumerator BuildAnimation()
     {
         var scale = transform.localScale;
 
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < 15; i++)
         {
             transform.localScale += Vector3.right * _animScale;
             transform.localScale -= Vector3.up * _animScale;
@@ -63,7 +87,7 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
             yield return null;
         }
 
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < 15; i++)
         {
             transform.localScale -= Vector3.right * _animScale;
             transform.localScale += Vector3.up * _animScale;
@@ -82,7 +106,7 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
         _outline.enabled = true;
         GameObject.FindGameObjectWithTag("Info")
                   .GetComponent<RMenu>()
-                  .Show(Information());
+                  .Show(Info);
     }
 
     public void Deselect()
@@ -104,10 +128,19 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
         // UI
         _stats.text = this.ToString() + "\nLvl. " + _level.ToString();
-        GameObject.FindGameObjectWithTag("Info").GetComponent<RMenu>().Show(Information());
 
         // effects
-        Instantiate(_upgradeEffect, transform.position + transform.up, transform.rotation);
+        Instantiate(
+            _upgradeEffect,
+            transform.position + transform.up,
+            transform.rotation
+        );
+        
+        AudioSource.PlayClipAtPoint(
+            _upgradeSound,
+            transform.position,
+            _gameData.Volume
+        );
     }
 
     public override string ToString()
@@ -117,9 +150,20 @@ public abstract class Building : MonoBehaviour, ISelectable, IUpgradable
 
     #region HELPER
 
+    protected void CreateInfo(string buildingSpecificInfo)
+    {
+        Info = new BuildingInfo(
+            this.ToString(),
+            _level.ToString(),
+            buildingSpecificInfo,
+            UpgradeCost.ToString(),
+            transform.GetSiblingIndex()
+        );
+    }
+
     void ComputeUpgradeCost()
     {
-        var m = 10f * Mathf.Pow(3f, (_level < 6 ? _level : _level - 5) - 1);
+        var m = _buildData.Cost.Mantissa() * Mathf.Pow(3f, (_level < 6 ? _level : _level - 5) - 1);
         var e = (_gameData.Target.Exponent() - 6) + (_level / 5) * 3;
         UpgradeCost = new Money(m, e);
     }

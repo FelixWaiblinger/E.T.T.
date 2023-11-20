@@ -10,11 +10,14 @@ public class Nature : Building
     void Start()
     {
         _approvalEvent.RaiseFloatEvent(_approval);
+
+        CreateInfo((_approval * 100).ToString("0.0") + "%");
+        GameObject.FindGameObjectWithTag("Info").GetComponent<RMenu>().Show(Info);
     }
 
     void OnDestroy()
     {
-        _approvalEvent.RaiseFloatEvent(_approval * -0.3f);
+        _approvalEvent.RaiseFloatEvent(_approval * -1.2f);
     }
 
     #endregion
@@ -23,17 +26,10 @@ public class Nature : Building
     {
         base.Upgrade();
 
-        _approvalEvent.RaiseFloatEvent(_approval * (0.2f * (_level - 1)));
-    }
+        CreateInfo((_approval * 100).ToString("0.0") + "%");
 
-    protected override BuildingInfo Information()
-    {
-        return new BuildingInfo(
-            this.ToString(),
-            _level.ToString(),
-            (_approval * 100).ToString("0.0") + "%",
-            UpgradeCost.ToString(),
-            transform.GetSiblingIndex()
+        _approvalEvent.RaiseFloatEvent(
+            UpgradeManager.NatureUpgrade(_approval, _level)
         );
     }
 }

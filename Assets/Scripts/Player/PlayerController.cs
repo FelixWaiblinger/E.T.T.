@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [SerializeField] private IntEventChannel _buildEvent;
     [SerializeField] private BoolEventChannel _infoEvent;
     [SerializeField] private VoidEventChannel _departEvent;
+    [SerializeField] private VoidEventChannel _titleEvent;
 
     [Header("Cursor")]
     [SerializeField] Texture2D _normalCursor;
@@ -20,12 +21,13 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     [Header("Input")]
     [SerializeField] private GameObject _sMenu;
     [SerializeField] private float _rotateSpeed;
-    private bool _rotate = false;
     private GameInput gameInput;
     private Camera _camera;
     private ISelectable _selectedObject;
+    private bool _rotate = false;
 
     [Header("Building")]
+    [SerializeField] private Image _removeButton;
     [SerializeField] private GameObject _denyEffect;
     [SerializeField] private LayerMask _obstacleLayers;
     [SerializeField] private Mockup[] _buildingMockups;
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     [Header("Departure")]
     [SerializeField] private Image _departBar;
+    [SerializeField] private RectTransform _transition;
     private float _departTimer = 0;
     private bool _depart = false;
 
@@ -49,12 +52,13 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 			gameInput.Controls.SetCallbacks(this);
 		}
 
-        StartCoroutine(Introduction());
+        gameInput.Controls.Enable();
     }
 
     void OnEnable()
     {
         _shopSelectEvent.IntEventRaised += CreateMockup;
+        _titleEvent.VoidEventRaised += () => StartCoroutine(Depart(0));
     }
 
     void OnDisable()
@@ -64,21 +68,23 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     void OnDestroy()
     {
+        StopAllCoroutines();
         gameInput.Controls.RemoveCallbacks(this);
     }
 
-    IEnumerator Introduction()
+    IEnumerator Depart(float delay = 1.3f)
     {
-        var camera = transform.GetChild(0);
-        camera.position = Vector3.forward * -100;
+        yield return new WaitForSeconds(delay);
 
-        while (camera.position.z < -10)
+        _transition.gameObject.SetActive(true);
+        var speed = 2f;
+
+        while (_transition.localScale.magnitude < 1000)
         {
-            camera.position += Vector3.forward;
+            _transition.localScale += Vector3.one * speed * Time.deltaTime;
+            speed *= 1.1f;
             yield return null;
         }
-
-        gameInput.Controls.Enable();
     }
 
     #endregion
@@ -120,11 +126,14 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
                 if (_remove) Destroy(hit.collider.gameObject);
                 else
                 {
+                    StopRemove();
+
                     if (_selectedObject != null) _selectedObject.Deselect();
                     _selectedObject = obj;
                     obj.Select();
                 }
             }
+            else StopRemove();
         }
 	}
 
@@ -179,12 +188,19 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     public void Remove()
     {
-        _remove = !_remove;
+        if (_remove) StopRemove();
+        else
+        {
+            _remove = true;
+            _removeButton.color = new Color(1, 0, 0, 1);
+        }
+
         SetCursor(_remove ? _removeCursor : _normalCursor);
     }
 
     public void ToggleInfo()
     {
+        StopRemove();
         _info = !_info;
         _infoEvent.RaiseBoolEvent(_info);
     }
@@ -192,6 +208,8 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
     // TODO
     public void Pause()
     {
+        StopRemove();
+
         // cancel current build mode
         if (_mockup != null) CreateMockup(_mockupIndex);
 
@@ -201,6 +219,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
     public void StartDepart()
     {
+        StopRemove();
         _depart = true;
     }
 
@@ -273,6 +292,7 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
 
         _departEvent.RaiseVoidEvent();
         _depart = false;
+        StartCoroutine(Depart());
     }
 
     void SetCursor(Texture2D cursor)
@@ -282,6 +302,12 @@ public class PlayerController : MonoBehaviour, GameInput.IControlsActions
             new(74, 43),
             CursorMode.Auto
         );
+    }
+
+    void StopRemove()
+    {
+        _remove = false;
+        _removeButton.color = new Color(1, 1, 1, 1);
     }
 
     bool MouseToWorld(Vector2 mouse, out Vector3 worldPosition)

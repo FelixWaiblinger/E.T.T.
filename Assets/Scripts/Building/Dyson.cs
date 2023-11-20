@@ -1,23 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Dyson : Building
 {
-    // Start is called before the first frame update
+    [SerializeField] private float _factor;
+
     void Start()
     {
-        
+        Info = new BuildingInfo(
+            this.ToString(),
+            _level.ToString(),
+            (_factor * 100).ToString("0.0") + "%",
+            UpgradeCost.ToString(),
+            transform.GetSiblingIndex()
+        );
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
 
-    protected override BuildingInfo Information()
+    public override void Upgrade()
     {
-        return new BuildingInfo();
+        base.Upgrade();
     }
 }

@@ -18,6 +18,6 @@ MonoBehaviour:
     _exponent: 3
   Target:
     _mantissa: 1
-    _exponent: 12
+    _exponent: 9
   Approval: 0
   Volume: 0.5
